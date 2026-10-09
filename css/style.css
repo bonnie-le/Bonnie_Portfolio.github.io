@@ -25,7 +25,7 @@
 }
 
 *, *::before, *::after { box-sizing: border-box; }
-html { scroll-behavior: smooth; }
+html { scroll-behavior: smooth; scroll-padding-top: 80px; }
 body {
   margin: 0;
   background: var(--bg);
@@ -41,19 +41,34 @@ img { display: block; max-width: 100%; }
 :focus-visible { outline: 2px solid var(--blue); outline-offset: 3px; border-radius: 3px; }
 
 /* Header */
+.top-bar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: var(--bg);
+  background: color-mix(in srgb, var(--bg) 95%, transparent);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid color-mix(in srgb, var(--ink) 9%, transparent);
+}
 .top {
   width: var(--page);
   margin: 0 auto;
-  padding: 22px 0;
+  padding: 16px 0;
   display: flex;
   align-items: center;
-  justify-content: space-between;
   gap: 16px;
 }
 .home { font-family: var(--display); font-weight: 700; text-decoration: none; }
-.controls { display: flex; align-items: center; gap: 18px; font-size: 14px; }
-.langs { display: flex; gap: 2px; }
-.langs button, .theme {
+
+/* Link to each section */
+.site-nav { display: flex; gap: 22px; margin-left: auto; font-size: 15px; }
+.site-nav a { color: var(--muted); text-decoration: none; padding: 4px 0; }
+.site-nav a:hover { color: var(--ink); }
+.site-nav a.is-active { color: var(--ink); box-shadow: inset 0 -2px var(--pink); }
+
+.controls { display: flex; align-items: center; gap: 18px; margin-left: 28px; font-size: 14px; }
+.theme {
   font: inherit;
   color: var(--muted);
   background: none;
@@ -61,11 +76,128 @@ img { display: block; max-width: 100%; }
   padding: 4px 6px;
   cursor: pointer;
 }
-.langs button[aria-pressed="true"] { color: var(--ink); font-weight: 600; box-shadow: inset 0 -2px var(--pink); }
-.langs button:hover, .theme:hover { color: var(--ink); }
+.theme:hover { color: var(--ink); }
 .theme svg { width: 17px; height: 17px; display: block; }
 .resume { text-decoration: none; font-weight: 600; color: var(--blue); }
 .resume:hover { text-decoration: underline; text-underline-offset: 4px; }
+
+/* Dropdown language bar */
+.lang-menu { position: relative; }
+.lang-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font: inherit;
+  font-weight: 600;
+  color: var(--ink);
+  background: none;
+  border: 0;
+  padding: 4px 6px;
+  cursor: pointer;
+}
+.lang-toggle svg { color: var(--muted); }
+.lang-toggle:hover svg, .lang-toggle[aria-expanded="true"] svg { color: var(--ink); }
+.icon-globe { width: 16px; height: 16px; }
+.icon-chevron { width: 12px; height: 12px; transition: transform 0.2s ease; }
+.lang-toggle[aria-expanded="true"] .icon-chevron { transform: rotate(180deg); }
+.lang-options {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 30;
+  min-width: 170px;
+  padding: 6px;
+  list-style: none;
+  background: var(--bg);
+  border: 1px solid color-mix(in srgb, var(--ink) 14%, transparent);
+  border-radius: 10px;
+  box-shadow: 0 16px 32px -16px rgba(0, 0, 0, 0.35);
+}
+.lang-options button {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  width: 100%;
+  padding: 8px 10px;
+  font: inherit;
+  font-size: 15px;
+  color: var(--ink);
+  text-align: left;
+  background: none;
+  border: 0;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.lang-options button:hover, .lang-options button:focus-visible { background: var(--pink-soft); }
+.lang-options button:focus-visible { outline-offset: -2px; }
+.lang-options button[aria-current="true"] { font-weight: 600; }
+.lang-options .check { width: 15px; height: 15px; color: var(--pink); visibility: hidden; }
+.lang-options button[aria-current="true"] .check { visibility: visible; }
+
+/* menu bar */
+.menu-toggle {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  color: var(--ink);
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+.menu-bar {
+  width: 18px;
+  height: 2px;
+  border-radius: 2px;
+  background: currentColor;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+.menu-toggle[aria-expanded="true"] .menu-bar:nth-child(1) { transform: translateY(6px) rotate(45deg); }
+.menu-toggle[aria-expanded="true"] .menu-bar:nth-child(2) { opacity: 0; }
+.menu-toggle[aria-expanded="true"] .menu-bar:nth-child(3) { transform: translateY(-6px) rotate(-45deg); }
+
+/* Màn hình nhỏ: link các mục chuyển vào bảng thả xuống */
+@media (max-width: 880px) {
+  .controls { margin-left: auto; }
+  .menu-toggle { display: inline-flex; }
+  .site-nav {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    flex-direction: column;
+    gap: 0;
+    margin: 0;
+    padding: 4px calc((100% - var(--page)) / 2) 14px;
+    font-size: 17px;
+    background: var(--bg);
+    border-bottom: 1px solid color-mix(in srgb, var(--ink) 12%, transparent);
+    box-shadow: 0 20px 30px -26px rgba(0, 0, 0, 0.45);
+  }
+  .top-bar.nav-open .site-nav { display: flex; }
+  .site-nav a {
+    padding: 13px 0;
+    color: var(--ink);
+    font-weight: 600;
+    border-bottom: 1px dashed color-mix(in srgb, var(--ink) 14%, transparent);
+  }
+  .site-nav a:last-child { border-bottom: 0; }
+  .site-nav a.is-active { color: var(--pink); box-shadow: none; }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .top-bar.nav-open .site-nav, .lang-options:not([hidden]) { animation: drop-in 0.18s ease-out; }
+}
+@keyframes drop-in {
+  from { opacity: 0; transform: translateY(-6px); }
+  to { opacity: 1; transform: none; }
+}
 
 /* Hero */
 .hero {
@@ -127,13 +259,13 @@ h1 {
   display: grid;
   grid-template-columns: 200px 1fr;
   gap: 32px;
+  align-items: baseline;   
   padding: 56px 0;
 }
 .row-label {
   font-size: 17px;
   font-weight: 600;
   color: var(--pink);
-  padding-top: 6px;
 }
 .row-body { max-width: 720px; }
 
@@ -172,9 +304,9 @@ h1 {
 .shot figcaption { font-size: 14px; margin-top: 10px; color: var(--muted); }
 .shot figcaption b { color: var(--ink); font-weight: 600; }
 
-.entry { display: grid; grid-template-columns: 170px 1fr; gap: 24px; }
+.entry { display: grid; grid-template-columns: 170px 1fr; gap: 24px; align-items: baseline; }
 .entry + .entry { margin-top: 40px; }
-.when { color: var(--muted); font-size: 15px; padding-top: 3px; }
+.when { color: var(--muted); font-size: 15px; }
 .entry h3 { font-size: 22px; font-weight: 700; }
 .org { color: var(--blue); font-weight: 500; margin: 4px 0 12px; }
 
@@ -202,13 +334,13 @@ h1 {
 }
 .contact .email:hover { color: var(--pink); }
 
-/* Contact chips: chỉ hiện icon, hover thì giãn ra hiện chữ */
+/*animation icon*/
 .chips { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 26px; }
 .chip {
   display: inline-flex;
   align-items: center;
   height: 50px;
-  padding: 0 14px;              /* icon 20px + 14px mỗi bên = nút tròn 50px */
+  padding: 0 14px;             
   border: 1.5px solid var(--muted);
   border-radius: 999px;
   color: var(--ink);
@@ -218,7 +350,7 @@ h1 {
 }
 .chip-icon { width: 20px; height: 20px; flex: none; }
 .chip-label {
-  max-width: 0;                 /* chữ bị giấu: rộng 0 */
+  max-width: 0;                 
   margin-left: 0;
   opacity: 0;
   white-space: nowrap;
@@ -228,14 +360,14 @@ h1 {
 }
 .chip:hover .chip-label,
 .chip:focus-visible .chip-label {
-  max-width: 8em;               /* đủ chỗ cho chữ dài nhất */
+  max-width: 8em;               
   margin-left: 10px;
   opacity: 1;
 }
 .chip.pink:hover, .chip.pink:focus-visible { background: var(--pink); border-color: var(--pink); color: var(--on-accent); }
 .chip.blue:hover, .chip.blue:focus-visible { background: var(--blue); border-color: var(--blue); color: var(--on-accent); }
 
-/* Điện thoại không có hover: luôn hiện chữ */
+/*phone*/
 @media (hover: none) {
   .chip-label { max-width: 8em; margin-left: 10px; opacity: 1; }
 }
@@ -254,7 +386,6 @@ h1 {
 @media (max-width: 880px) {
   .hero { grid-template-columns: 1fr; padding-top: 24px; gap: 36px; }
   .row { grid-template-columns: 1fr; gap: 16px; padding: 44px 0; }
-  .row-label { padding-top: 0; }
 }
 @media (max-width: 600px) {
   :root { --page: min(1080px, 100% - 32px); }
@@ -267,4 +398,5 @@ h1 {
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   .chip, .chip-label { transition: none; }
+  .icon-chevron, .menu-bar { transition: none; } 
 }

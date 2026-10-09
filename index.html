@@ -35,15 +35,29 @@
 <body>
   <header class="top">
     <a class="home" href="#top">Bonnie Le</a>
+
+    <nav class="site-nav" id="site-nav" data-i18n-aria="ui.nav">
+      <a href="#about" data-i18n="about.label"></a>
+      <a href="project" data-i18n="project.label"></a>
+      <a href="#experience" data-i18n="exp.label"></a>
+      <a href="#skills" data-i18n="skills.label"></a>
+      <a href="#contact" data-i18n="contact.label"></a>
+    </nav>
+
     <div class="controls">
-      <div class="langs" role="group" data-i18n-aria="ui.language" id="langs">
-        <button type="button" data-lang="en" lang="en">EN</button>
-        <button type="button" data-lang="fr" lang="fr">FR</button>
-        <button type="button" data-lang="vi" lang="vi">VI</button>
-      </div>
-      <button type="button" class="theme" id="theme"></button>
-      <a class="resume" href="/asset/BonnieLe__resume.pdf" target="_blank" rel="noreferrer" data-i18n="ui.resume"></a>
-    </div>
+        <div class="lang-menu" id="lang-menu">
+          <button type="button" class="lang-toggle" id="lang-toggle" aria-expanded="false" aria-controls="lang-options">
+            <svg class="icon-globe" viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><path d="M12 3a14 14 0 0 1 0 18a14 14 0 0 1 0-18z"/></svg>
+            <span id="lang-code">EN</span>
+            <svg class="icon-chevron" viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+          </button>
+          <ul class="lang-options" id="lang-options" hidden>
+            <li><button type="button" data-lang="en" lang="en">English <svg class="check" viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></button></li>
+            <li><button type="button" data-lang="fr" lang="fr">Français <svg class="check" viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></button></li>
+            <li><button type="button" data-lang="vi" lang="vi">Tiếng Việt <svg class="check" viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></button></li>
+          </ul>
+        </div>
+
   </header>
 
   <main id="top">

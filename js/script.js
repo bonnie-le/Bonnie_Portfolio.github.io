@@ -21,7 +21,7 @@ const SKILLS = [
 
 const translations = {
   en: {
-    ui: { language: "Language", resume: "Resume", top: "Back to top", light: "Switch to light mode", dark: "Switch to dark mode" },
+    ui: { language: "Language", resume: "Resume", top: "Back to top", light: "Switch to light mode", dark: "Switch to dark mode", nav: "Sections", menuOpen: "Open menu", menuClose: "Close menu" },
     hero: {
       lede: "IT: Software Development student at NBCC, focused on embedded systems. I connect software to real hardware.",
       location: "Fredericton, NB",
@@ -73,7 +73,7 @@ const translations = {
   },
 
   fr: {
-    ui: { language: "Langue", resume: "CV", top: "Retour en haut", light: "Passer au mode clair", dark: "Passer au mode sombre" },
+    ui: { language: "Langue", resume: "CV", top: "Retour en haut", light: "Passer au mode clair", dark: "Passer au mode sombre", nav: "Sections", menuOpen: "Ouvrir le menu", menuClose: "Fermer le menu" },
     hero: {
       lede: "Étudiante en TI : développement logiciel au CCNB, spécialisée en systèmes embarqués. Je relie le logiciel au matériel.",
       location: "Fredericton, N.-B.",
@@ -125,7 +125,7 @@ const translations = {
   },
 
   vi: {
-    ui: { language: "Ngôn ngữ", resume: "CV", top: "Lên đầu trang", light: "Chuyển sang giao diện sáng", dark: "Chuyển sang giao diện tối" },
+    ui: { language: "Ngôn ngữ", resume: "CV", top: "Lên đầu trang", light: "Chuyển sang giao diện sáng", dark: "Chuyển sang giao diện tối", nav: "Các phần", menuOpen: "Mở menu", menuClose: "Đóng menu" },
     hero: {
       lede: "Sinh viên CNTT: Phát triển phần mềm tại NBCC, theo hướng hệ thống nhúng. Tôi kết nối phần mềm với phần cứng thật.",
       location: "Fredericton, NB",
@@ -198,6 +198,7 @@ document.querySelectorAll("[data-link]").forEach((el) => {
   if (!url) el.hidden = true;
   else if (el.tagName === "A") el.href = url;
 });
+
 // hide the links row when all its links are empty
 document.querySelectorAll(".links").forEach((row) => {
   if (![...row.querySelectorAll("a")].some((a) => !a.hidden)) row.hidden = true;
