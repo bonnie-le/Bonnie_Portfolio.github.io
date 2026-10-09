@@ -1,4 +1,3 @@
-
 const LINKS = {
   github: "https://github.com/bonnie-le",      
   linkedin: "https://www.linkedin.com/in/bao-chau-anh-le-a5b794368", 
@@ -65,7 +64,7 @@ const translations = {
     },
     skills: { label: "Skills", groups: ["Languages", "Web", "Databases and delivery", "Hardware and IoT"] },
     about: {
-      label: "About",
+      label: "About me",
       first: "I have a strong desire to work in IT and a real passion for programming. I'm comfortable with both hands-on technical work and careful data entry, and I manage my time well.",
       second: "Volunteering in NBCC's lab helped me adapt quickly to lab work. I've been actively learning about IoT, robotics and drones, and I enjoy solving problems creatively.",
     },
@@ -117,7 +116,7 @@ const translations = {
     },
     skills: { label: "Compétences", groups: ["Langages", "Web", "Données et déploiement", "Matériel et IdO"] },
     about: {
-      label: "À propos",
+      label: "À propos de moi",
       first: "J'ai un fort désir de travailler en TI et une vraie passion pour la programmation. Je suis à l'aise autant avec le travail technique pratique qu'avec la saisie de données minutieuse, et je gère bien mon temps.",
       second: "Mon bénévolat au laboratoire du CCNB m'a aidée à m'adapter rapidement au travail en labo. J'approfondis l'IdO, la robotique et les drones, et j'aime résoudre des problèmes de façon créative.",
     },
@@ -125,7 +124,7 @@ const translations = {
   },
 
   vi: {
-    ui: { language: "Ngôn ngữ", resume: "CV", top: "Lên đầu trang", light: "Chuyển sang giao diện sáng", dark: "Chuyển sang giao diện tối", nav: "Các phần", menuOpen: "Mở menu", menuClose: "Đóng menu" },
+    ui: { language: "Ngôn ngữ", resume: "CV", top: "Lên đầu trang", light: "Chuyển sang giao diện sáng", dark: "Chuyển sang giao diện tối", nav: "Các mục", menuOpen: "Mở menu", menuClose: "Đóng menu" },
     hero: {
       lede: "Sinh viên CNTT: Phát triển phần mềm tại NBCC, theo hướng hệ thống nhúng. Tôi kết nối phần mềm với phần cứng thật.",
       location: "Fredericton, NB",
@@ -199,7 +198,7 @@ document.querySelectorAll("[data-link]").forEach((el) => {
   else if (el.tagName === "A") el.href = url;
 });
 
-// hide the links row when all its links are empty
+// hide the links row 
 document.querySelectorAll(".links").forEach((row) => {
   if (![...row.querySelectorAll("a")].some((a) => !a.hidden)) row.hidden = true;
 });
@@ -234,19 +233,173 @@ function renderText() {
     .map((g, i) => `<div><h3>${esc(g)}</h3><p>${SKILLS[i].join(", ")}</p></div>`)
     .join("");
 
-  document.querySelectorAll("#langs button").forEach((b) =>
-    b.setAttribute("aria-pressed", b.dataset.lang === state.lang)
-  );
+  renderLangMenu();
+  renderMenuLabel();
   renderThemeButton();
   store.set("bonnie-language", state.lang);
 }
 
-$("#langs").addEventListener("click", (e) => {
-  const b = e.target.closest("button[data-lang]");
-  if (!b || b.dataset.lang === state.lang) return;
-  state.lang = b.dataset.lang;
-  renderText();
+/* ---------- language ---------- */
+const LANG_NAMES = { en: "English", fr: "Français", vi: "Tiếng Việt" };
+const topBar = $("#top-bar");
+const langMenu = $("#lang-menu");
+const langToggle = $("#lang-toggle");
+const langList = $("#lang-options");
+const langItems = [...langList.querySelectorAll("button[data-lang]")];
+
+function renderLangMenu() {
+  $("#lang-code").textContent = state.lang.toUpperCase();
+  langToggle.setAttribute("aria-label", `${t().ui.language}: ${LANG_NAMES[state.lang]}`);
+  langItems.forEach((b) => {
+    if (b.dataset.lang === state.lang) b.setAttribute("aria-current", "true");
+    else b.removeAttribute("aria-current");
+  });
+}
+
+const langMenuOpen = () => !langList.hidden;
+
+function openLangMenu() {
+  setNavOpen(false);
+  langList.hidden = false;
+  langToggle.setAttribute("aria-expanded", "true");
+  (langList.querySelector('[aria-current="true"]') || langItems[0]).focus({ preventScroll: true });
+}
+
+function closeLangMenu(returnFocus) {
+  if (!langMenuOpen()) return;
+  langList.hidden = true;
+  langToggle.setAttribute("aria-expanded", "false");
+  if (returnFocus) langToggle.focus({ preventScroll: true });
+}
+
+langToggle.addEventListener("click", () => (langMenuOpen() ? closeLangMenu(false) : openLangMenu()));
+langToggle.addEventListener("keydown", (e) => {
+  if (e.key === "ArrowDown" || e.key === "ArrowUp") {
+    e.preventDefault();
+    openLangMenu();
+  }
 });
+// arrow keys move between languages
+langList.addEventListener("keydown", (e) => {
+  const i = langItems.indexOf(document.activeElement);
+  const go = (n) => {
+    e.preventDefault();
+    langItems[(n + langItems.length) % langItems.length].focus({ preventScroll: true });
+  };
+  if (e.key === "ArrowDown") go(i + 1);
+  else if (e.key === "ArrowUp") go(i - 1);
+  else if (e.key === "Home") go(0);
+  else if (e.key === "End") go(langItems.length - 1);
+  else if (e.key === "Tab") closeLangMenu(false);
+});
+langItems.forEach((b) =>
+  b.addEventListener("click", () => {
+    if (b.dataset.lang !== state.lang) {
+      state.lang = b.dataset.lang;
+      renderText();
+    }
+    closeLangMenu(true);
+  })
+);
+
+/* ---------- section menu on phone screens ---------- */
+const nav = $("#site-nav");
+const navLinks = [...nav.querySelectorAll('a[href^="#"]')];
+const menuToggle = $("#menu-toggle");
+const navOpen = () => topBar.classList.contains("nav-open");
+
+function renderMenuLabel() {
+  menuToggle.setAttribute("aria-label", navOpen() ? t().ui.menuClose : t().ui.menuOpen);
+}
+
+function setNavOpen(open) {
+  topBar.classList.toggle("nav-open", open);
+  menuToggle.setAttribute("aria-expanded", String(open));
+  renderMenuLabel();
+}
+
+menuToggle.addEventListener("click", () => {
+  const open = !navOpen();
+  if (open) closeLangMenu(false);
+  setNavOpen(open);
+});
+
+// after picking a section: close the panel and highlight that section
+navLinks.forEach((a) =>
+  a.addEventListener("click", () => {
+    setNavOpen(false);
+    pinActive(a);
+  })
+);
+matchMedia("(max-width: 880px)").addEventListener("change", (e) => {
+  if (!e.matches) setNavOpen(false);
+});
+
+// click outside or press Escape to close menus
+document.addEventListener("click", (e) => {
+  if (!langMenu.contains(e.target)) closeLangMenu(false);
+  if (navOpen() && !topBar.contains(e.target)) setNavOpen(false);
+});
+document.addEventListener("keydown", (e) => {
+  if (e.key !== "Escape") return;
+  if (langMenuOpen()) closeLangMenu(true);
+  else if (navOpen()) {
+    setNavOpen(false);
+    menuToggle.focus();
+  }
+});
+
+/* ---------- highlight the section on screen ---------- */
+
+let pinned = null;
+let pinTimer = 0;
+function holdPin(ms) {
+  clearTimeout(pinTimer);
+  pinTimer = setTimeout(() => (pinned = null), ms);
+}
+function pinActive(link) {
+  pinned = link;
+  setActive(link);
+  holdPin(400);
+}
+
+function setActive(link) {
+  navLinks.forEach((a) => {
+    const on = a === link;
+    a.classList.toggle("is-active", on);
+    if (on) a.setAttribute("aria-current", "location");
+    else a.removeAttribute("aria-current");
+  });
+}
+
+if ("IntersectionObserver" in window) {
+  const hero = $(".hero");
+  
+  const spy = new IntersectionObserver(
+    (entries) => {
+      if (pinned) return;
+      entries.forEach((en) => {
+        if (!en.isIntersecting) return;
+        setActive(en.target === hero ? null : navLinks.find((a) => a.hash === "#" + en.target.id) || null);
+      });
+    },
+    { rootMargin: "-45% 0px -50% 0px" }
+  );
+  if (hero) spy.observe(hero);
+  navLinks.forEach((a) => {
+    const section = document.querySelector(a.hash);
+    if (section) spy.observe(section);
+  });
+  
+  addEventListener(
+    "scroll",
+    () => {
+      if (pinned) return holdPin(150);
+      if (innerHeight + scrollY >= document.documentElement.scrollHeight - 4) setActive(navLinks[navLinks.length - 1]);
+    },
+    { passive: true }
+  );
+}
 
 /* ---------- theme ---------- */
 const SUN = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>';
